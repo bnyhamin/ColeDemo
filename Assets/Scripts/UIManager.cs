@@ -5,8 +5,9 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;    
     [SerializeField] Text scoreText;
-    [SerializeField] Text timeText;    
-
+    [SerializeField] Text nombe_usuarioText;
+    [SerializeField] Text timeText;
+    [SerializeField] private Text labelDialog;
     private void Awake()
     {
         if (Instance == null)
@@ -20,14 +21,24 @@ public class UIManager : MonoBehaviour
         //showUITime(false);
     }
 
-    /*public void UpdateUIScore(int newScore)
+    public void UpdateUIScore(int newScore)
     {
         scoreText.text = newScore.ToString();
-    }*/
+    }
+
+    public void UpdateUINombre(string nombe_usuario)
+    {
+        nombe_usuarioText.text = nombe_usuario;
+    }
 
     public void UpdateUITime(int newTime)
     {
         timeText.text = newTime.ToString();
+    }
+
+    public void ChangeDialog(string texto)
+    {
+        labelDialog.text = texto;
     }
 
     /*public void showUITime(bool visible)

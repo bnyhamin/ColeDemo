@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,7 +11,10 @@ public class GameManager : MonoBehaviour
     public AudioClip[] audios;
     [SerializeField] int score;
     public GameObject pausePanel;
+    [SerializeField] private GameObject prefabPanelDialog;    
     public GameObject personajePanel;
+    public GameObject[] personajes;
+    [SerializeField] private GameObject _camCanvas;
 
     [SerializeField] private int idUsuario;
     [SerializeField] private string nombreUsuario;
@@ -18,6 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string dni;
     [SerializeField] private int puntaje;
     [SerializeField] private int idPersonaje;
+    [SerializeField] private bool _puntero_visible=true;
 
     public int Score
     {
@@ -43,7 +48,7 @@ public class GameManager : MonoBehaviour
     {
         //UIManager.Instance.UpdateUIScore(score);
         //Time.timeScale = 1;
-
+        
         idUsuario = PlayerPrefs.GetInt("varglobal_idUsuario");
         nombreUsuario = PlayerPrefs.GetString("varglobal_nombreUsuario");
         puntaje = PlayerPrefs.GetInt("varglobal_puntaje");
@@ -53,9 +58,17 @@ public class GameManager : MonoBehaviour
         //si no tiene personaje configurado abre panel para escoger personaje
         print("idUsuario:" + idUsuario);
         print("idPersonaje:" + idPersonaje);
+        UIManager.Instance.UpdateUINombre(nombreUsuario);
+
         if (idPersonaje == 0)
         {
             personajePanel.SetActive(true);
+            _camCanvas.SetActive(true);
+        }
+        else
+        {
+            choisePersonaje();
+            _camCanvas.SetActive(false);
         }
 
     }
@@ -63,13 +76,36 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (Input.GetKeyDown("escape"))
         {
             //SceneManager.LoadScene("Menu");
-            pausePanel.SetActive(true);
-            Time.timeScale = 0;
+            //pausePanel.SetActive(true);
+            
+            PunteroVisible(_puntero_visible);
 
         }
+    }
+
+    public void PunteroVisible(bool visible)
+    {
+        if (visible)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            _puntero_visible = false;
+            Time.timeScale = 0;
+            _camCanvas.SetActive(true);
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            _puntero_visible = true;
+            Time.timeScale = 1;
+            _camCanvas.SetActive(false);
+        }
+        
     }
 
     public void startTime()
@@ -99,7 +135,14 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    
+    public void Ajustes()
+    {
+        Debug.Log("Ajustes");
+        personajePanel.SetActive(true);
+        //_camCanvas.SetActive(true);
+    }
+
+
     public void ChangePersonaje(int id_personaje)
     {
         StartCoroutine(Change_Personaje(id_personaje));
@@ -113,12 +156,54 @@ public class GameManager : MonoBehaviour
         if (conneccion.text == "201")
         {
             personajePanel.SetActive(false);
+            choisePersonaje();
             print("registró correctamente");
         }
         else
         {
             Debug.LogError("Error en la conección con la base de datos");
         }
+    }
+
+    private void cleanPersonaje()
+    {
+        for(int i = 0; i < personajes.Length; i++)
+        {
+            personajes[i].SetActive(false);
+        }
+        //GameObject.Find("Man").SetActive(false);
+        //GameObject.Find("Woman").SetActive(false);
+    }
+
+    
+    private void choisePersonaje()
+    {
+        cleanPersonaje();
+        _camCanvas.SetActive(false);
+        if (idPersonaje == 1) personajes[0].SetActive(true);
+        if (idPersonaje == 2) personajes[1].SetActive(true);
+        
+    }
+
+    public void showLivingInformation(bool fgvisible, string text)
+    {
+        //if (Player.Instance.accesories.Count > 0 && fgvisible) fgvisible = false;
+        //_LivingText.gameObject.SetActive(fgvisible);
+        string mensaje = string.Empty;
+        if(text == "ColliderAula1")
+        {
+            mensaje = "AULA 1";
+        }
+        prefabPanelDialog.SetActive(fgvisible);
+        UIManager.Instance.ChangeDialog(mensaje);
+    }
+
+
+    public void Logout()
+    {
+        Debug.Log("Logout");
+        Time.timeScale = 1;
+        SceneManager.LoadScene("SceneLogin");
     }
 
 

@@ -13,11 +13,15 @@ public class ControlAcceso : MonoBehaviour
     public InputField txtClave1;
     public InputField txtCorreo;
     public InputField txtDni;
-    public string nombreUsuario;
-    public string correo;    
-    public string dni;    
-    public string puntaje;
-    public int idUsuario;
+    [SerializeField] private int idUsuario;
+    [SerializeField] private string nombreUsuario;
+    [SerializeField] private string correo;
+    [SerializeField] private string dni;
+    [SerializeField] private int puntaje;    
+    [SerializeField] private int idPersonaje;
+    [SerializeField] private int fg_permiso;
+    [SerializeField] private GameObject panelPago;
+
     public bool sesionIniciada = false;
     [SerializeField] GameObject panelLogin;
     [SerializeField] GameObject panelRegistrar;
@@ -39,6 +43,11 @@ public class ControlAcceso : MonoBehaviour
     {
         StartCoroutine(Registrar());
 
+    }
+
+    public void Registrarpago()
+    {
+        StartCoroutine(Registrar_pago());
     }
 
     public void BotonPanelActive(string namePanel)
@@ -79,21 +88,42 @@ public class ControlAcceso : MonoBehaviour
         }
         else
         {
+            print(conneccion.text);
             string[] nDatos = conneccion.text.Split("|");            
-            if(nDatos.Length != 3)
+            if(nDatos.Length != 6)
             {
                 print("Error en la conección");
             }
             else
             {
-                nombreUsuario = nDatos[0];
-                correo = nDatos[1];
-                puntaje = nDatos[2];
+                
+                idUsuario = int.Parse(nDatos[0]);
+                nombreUsuario = nDatos[1];
+                correo = nDatos[2];
+                puntaje = int.Parse(nDatos[3]);
+                idPersonaje = int.Parse(nDatos[4]);
+                fg_permiso = int.Parse(nDatos[5]);
+                print("idPersonaje:" + idPersonaje);
                 sesionIniciada = true;
+                PlayerPrefs.SetInt("varglobal_idUsuario", idUsuario);
                 PlayerPrefs.SetString("varglobal_nombreUsuario", nombreUsuario);
-                PlayerPrefs.SetInt("varglobal_puntaje", int.Parse(puntaje));
+                PlayerPrefs.SetInt("varglobal_puntaje", puntaje);
                 PlayerPrefs.SetString("varglobal_correo", correo);
-                SceneManager.LoadScene("SceneLogueado");
+                PlayerPrefs.SetInt("varglobal_idPersonaje", idPersonaje);
+
+                if (fg_permiso == 1)
+                {
+                    
+                    SceneManager.LoadScene("SceneGame");
+                    print("Entro a SceneGame");
+                }
+                else
+                {
+                    print("No tiene permiso, debe realizar pago");
+                    panelPago.SetActive(true);
+                }
+
+                
             }
         }
        
@@ -115,17 +145,44 @@ public class ControlAcceso : MonoBehaviour
             txtDni.text = string.Empty;
             txtClave1.text = string.Empty;
             nombreUsuario = txtUsuario.text;
-            puntaje = "0";
+            puntaje = int.Parse("0");
             sesionIniciada = true;
             print("registró correctamente");
+
+            PlayerPrefs.SetInt("varglobal_idUsuario", idUsuario);
+            PlayerPrefs.SetString("varglobal_nombreUsuario", nombreUsuario);
+            PlayerPrefs.SetInt("varglobal_puntaje", puntaje);
+            PlayerPrefs.SetString("varglobal_correo", correo);
+            PlayerPrefs.SetInt("varglobal_idPersonaje", idPersonaje);
         }
         else
         {
             Debug.LogError("Error en la conección con la base de datos");
+            panelPago.SetActive(true);
         }
     }
 
     
+    IEnumerator Registrar_pago()
+    {
+        print("idusuario:" + idUsuario);
+        WWW conneccion = new WWW("http://167.71.101.78/colegio3d/registra_pago.php?id_usuario=" + idUsuario);
+        yield return (conneccion);
+        if (conneccion.text == "201")
+        {
+            
+            print("pagó correctamente");
+
+            panelPago.SetActive(false);
+            SceneManager.LoadScene("SceneGame");
+        }
+        else
+        {
+            Debug.LogError("Error en la conección con la base de datos");
+            panelPago.SetActive(true);
+        }
+        
+    }
 
     // Update is called once per frame
     void Update()
