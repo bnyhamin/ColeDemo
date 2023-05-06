@@ -34,6 +34,9 @@ public class Player : MonoBehaviour
     {
         _transform = transform;
         _rigidbody = GetComponent<Rigidbody>();
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+        Cursor.lockState = CursorLockMode.Locked;
+#endif
 
         if (Instance == null)
         {
