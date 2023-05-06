@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
     public AudioClip[] audios;
     [SerializeField] int score;
     public GameObject pausePanel;
-    [SerializeField] private GameObject prefabPanelDialog;    
+    [SerializeField] private GameObject prefabPanelDialog;
+    [SerializeField] private GameObject panelStatus;
     public GameObject personajePanel;
     public GameObject[] personajes;
     [SerializeField] private GameObject _camCanvas;
@@ -64,11 +65,13 @@ public class GameManager : MonoBehaviour
         {
             personajePanel.SetActive(true);
             _camCanvas.SetActive(true);
+            panelStatus.SetActive(false);
         }
         else
         {
             choisePersonaje();
             _camCanvas.SetActive(false);
+            panelStatus.SetActive(true);
         }
 
     }
@@ -89,23 +92,29 @@ public class GameManager : MonoBehaviour
 
     public void PunteroVisible(bool visible)
     {
+        print("visible:"+visible);
         if (visible)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            _puntero_visible = false;
-            Time.timeScale = 0;
-            _camCanvas.SetActive(true);
-        }
-        else
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            _puntero_visible = true;
+            Time.timeScale = 0;
+            _camCanvas.SetActive(true);
+            panelStatus.SetActive(true);
+            _puntero_visible = false; //al gatillar cambia a este valor para la siguiente vez
+            cleanPersonaje();
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
             Time.timeScale = 1;
             _camCanvas.SetActive(false);
+            panelStatus.SetActive(true);
+            _puntero_visible = true;//al gatillar cambia a este valor para la siguiente vez
+            choisePersonaje();
         }
-        
+
+
     }
 
     public void startTime()
@@ -165,7 +174,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void cleanPersonaje()
+    public void cleanPersonaje()
     {
         for(int i = 0; i < personajes.Length; i++)
         {
@@ -177,22 +186,29 @@ public class GameManager : MonoBehaviour
 
     
     private void choisePersonaje()
-    {
+    {        
         cleanPersonaje();
-        _camCanvas.SetActive(false);
+        if (!_puntero_visible)
+        {   
+            Time.timeScale = 1;
+            _camCanvas.SetActive(false);
+            panelStatus.SetActive(true);
+            _puntero_visible = true;
+        }
+            _camCanvas.SetActive(false);
         if (idPersonaje == 1) personajes[0].SetActive(true);
         if (idPersonaje == 2) personajes[1].SetActive(true);
         
     }
 
     public void showLivingInformation(bool fgvisible, string text)
-    {
-        //if (Player.Instance.accesories.Count > 0 && fgvisible) fgvisible = false;
-        //_LivingText.gameObject.SetActive(fgvisible);
+    {        
         string mensaje = string.Empty;
         if(text == "ColliderAula1")
         {
-            mensaje = "AULA 1";
+            mensaje = "Bienvenido al Aula de Historia!." +
+                "                          " +
+                "En este curso conocerás la Historia del Perú y del Mundo";
         }
         prefabPanelDialog.SetActive(fgvisible);
         UIManager.Instance.ChangeDialog(mensaje);

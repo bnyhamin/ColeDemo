@@ -6168,7 +6168,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 339088177}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &339088179
 Camera:
   m_ObjectHideFlags: 0
@@ -15387,6 +15387,7 @@ MonoBehaviour:
   score: 0
   pausePanel: {fileID: 0}
   prefabPanelDialog: {fileID: 239665105}
+  panelStatus: {fileID: 589613562}
   personajePanel: {fileID: 1252377488}
   personajes:
   - {fileID: 1965212363}
@@ -23750,7 +23751,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1316078898}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &1316078901
 Camera:
   m_ObjectHideFlags: 0
@@ -26666,7 +26667,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1471604632}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &1471604634
 Camera:
   m_ObjectHideFlags: 0
